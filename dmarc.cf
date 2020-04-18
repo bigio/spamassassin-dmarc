@@ -1,0 +1,14 @@
+header GB_DMARC_REJECT eval:check_dmarc_reject()
+describe GB_DMARC_REJECT Dmarc reject policy
+score GB_DMARC_REJECT 10
+priority GB_DMARC_REJECT 1000
+
+header GB_DMARC_QUAR eval:check_dmarc_quar()
+describe GB_DMARC_NONE Dmarc quarantine policy
+score GB_DMARC_QUAR 3
+priority GB_DMARC_QUAR 1000
+
+header GB_DMARC_NONE eval:check_dmarc_none()
+describe GB_DMARC_NONE Dmarc none policy
+score GB_DMARC_NONE 1
+priority GB_DMARC_NONE 1000
