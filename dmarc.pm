@@ -196,10 +196,14 @@ sub _check_dmarc {
   ]);
   $result = $dmarc->validate();
 
-  # use Data::Dumper;
-  # dbg("Result: " . Dumper $result);
+  use Data::Dumper;
+  dbg("Result: " . Dumper $result);
   $self->{dmarc_result} = $result->result;
-  $self->{dmarc_policy} = $result->published->p;
+  if($self->{dmarc_result} ne 'none') {
+    $self->{dmarc_policy} = $result->published->p;
+  } else { 
+    $self->{dmarc_policy} = "none";
+  }
   $self->{dmarc_checked} = 1;
 }
 
