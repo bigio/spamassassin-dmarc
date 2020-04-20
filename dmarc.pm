@@ -103,7 +103,7 @@ sub check_dmarc_reject {
   $pms->action_depends_on_tags(\@tags,
       sub { my($pms, @args) = @_;
         $self->_check_dmarc(@_);
-        if(($self->{dmarc_result} eq 'fail') and ($self->{dmarc_policy} eq 'reject')) {
+        if((defined $self->{dmarc_result}) and ($self->{dmarc_result} eq 'fail') and ($self->{dmarc_policy} eq 'reject')) {
           $pms->got_hit($pms->get_current_eval_rule_name(), "");
           return 1;
         }
@@ -120,7 +120,7 @@ sub check_dmarc_quarantine {
   $pms->action_depends_on_tags(\@tags,
       sub { my($pms, @args) = @_;
         $self->_check_dmarc(@_);
-        if(($self->{dmarc_result} eq 'fail') and ($self->{dmarc_policy} eq 'quarantine')) {
+        if((defined $self->{dmarc_result}) and ($self->{dmarc_result} eq 'fail') and ($self->{dmarc_policy} eq 'quarantine')) {
           $pms->got_hit($pms->get_current_eval_rule_name(), "");
           return 1;
         }
@@ -137,7 +137,7 @@ sub check_dmarc_none {
   $pms->action_depends_on_tags(\@tags,
       sub { my($pms, @args) = @_;
         $self->_check_dmarc(@_);
-        if(($self->{dmarc_result} eq 'fail') and ($self->{dmarc_policy} eq 'none')) {
+        if((defined $self->{dmarc_result}) and ($self->{dmarc_result} eq 'fail') and ($self->{dmarc_policy} eq 'none')) {
           $pms->got_hit($pms->get_current_eval_rule_name(), "");
           return 1;
         }
@@ -198,7 +198,7 @@ sub _check_dmarc {
 
   dbg("result: " . $result->result . ", disposition: " . $result->disposition . ", dkim: " . $result->dkim . ", spf: " . $result->spf);
   $self->{dmarc_result} = $result->result;
-  if($self->{dmarc_result} ne 'none') {
+  if((defined $self->{dmarc_result}) and ($self->{dmarc_result} ne 'none')) {
     $self->{dmarc_policy} = $result->published->p;
   } else { 
     $self->{dmarc_policy} = "no policy available";
