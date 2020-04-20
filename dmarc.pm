@@ -196,7 +196,7 @@ sub _check_dmarc {
   ]);
   $result = $dmarc->validate();
 
-  # use Data::Dumper
+  # use Data::Dumper;
   # dbg("Result: " . Dumper $result);
   $self->{dmarc_result} = $result->result;
   $self->{dmarc_policy} = $result->published->p;
