@@ -159,11 +159,18 @@ sub _check_dmarc {
   $lasthop = $pms->{relays_external}->[0];
   return if (not defined $lasthop->{ip});
 
-  # XXX handle all spf result codes
   $spf_status = 'pass' if ($pms->{spf_pass} eq 1);
   $spf_status = 'fail' if ($pms->{spf_fail} eq 1);
+  $spf_status = 'fail' if ($pms->{spf_none} eq 1);
+  $spf_status = 'fail' if ($pms->{spf_permerror} eq 1);
+  $spf_status = 'neutral' if ($pms->{spf_neutral} eq 1);
+  $spf_status = 'softfail' if ($pms->{spf_softfail} eq 1);
   $spf_helo_status = 'pass' if ($pms->{spf_helo_pass} eq 1);
   $spf_helo_status = 'fail' if ($pms->{spf_helo_fail} eq 1);
+  $spf_helo_status = 'fail' if ($pms->{spf_helo_permerror} eq 1);
+  $spf_helo_status = 'fail' if ($pms->{spf_helo_none} eq 1);
+  $spf_helo_status = 'neutral' if ($pms->{spf_helo_neutral} eq 1);
+  $spf_helo_status = 'softfail' if ($pms->{spf_helo_softfail} eq 1);
 
   $dmarc->source_ip($lasthop->{ip});
   $dmarc->envelope_to($self->uri_to_domain($pms->get('To:addr')));
