@@ -196,8 +196,7 @@ sub _check_dmarc {
   ]);
   $result = $dmarc->validate();
 
-  use Data::Dumper;
-  dbg("Result: " . Dumper $result);
+  dbg("result: " . $result->result . ", disposition: " . $result->disposition . ", dkim: " . $result->dkim . ", spf: " . $result->spf);
   $self->{dmarc_result} = $result->result;
   if($self->{dmarc_result} ne 'none') {
     $self->{dmarc_policy} = $result->published->p;
