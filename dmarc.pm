@@ -202,7 +202,7 @@ sub _check_dmarc {
   if($self->{dmarc_result} ne 'none') {
     $self->{dmarc_policy} = $result->published->p;
   } else { 
-    $self->{dmarc_policy} = "none";
+    $self->{dmarc_policy} = "no policy available";
   }
   $self->{dmarc_checked} = 1;
 }
