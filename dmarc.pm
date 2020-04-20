@@ -164,18 +164,18 @@ sub _check_dmarc {
   $lasthop = $pms->{relays_external}->[0];
   return if (not defined $lasthop->{ip});
 
-  $spf_status = 'pass' if ($pms->{spf_pass} eq 1);
-  $spf_status = 'fail' if ($pms->{spf_fail} eq 1);
-  $spf_status = 'fail' if ($pms->{spf_none} eq 1);
-  $spf_status = 'fail' if ($pms->{spf_permerror} eq 1);
-  $spf_status = 'neutral' if ($pms->{spf_neutral} eq 1);
-  $spf_status = 'softfail' if ($pms->{spf_softfail} eq 1);
-  $spf_helo_status = 'pass' if ($pms->{spf_helo_pass} eq 1);
-  $spf_helo_status = 'fail' if ($pms->{spf_helo_fail} eq 1);
-  $spf_helo_status = 'fail' if ($pms->{spf_helo_permerror} eq 1);
-  $spf_helo_status = 'fail' if ($pms->{spf_helo_none} eq 1);
-  $spf_helo_status = 'neutral' if ($pms->{spf_helo_neutral} eq 1);
-  $spf_helo_status = 'softfail' if ($pms->{spf_helo_softfail} eq 1);
+  $spf_status = 'pass' if ((defined $pms->{spf_pass}) and ($pms->{spf_pass} eq 1));
+  $spf_status = 'fail' if ((defined $pms->{spf_fail}) and ($pms->{spf_fail} eq 1));
+  $spf_status = 'fail' if ((defined $pms->{spf_none}) and ($pms->{spf_none} eq 1));
+  $spf_status = 'fail' if ((defined $pms->{spf_permerror}) and ($pms->{spf_permerror} eq 1));
+  $spf_status = 'neutral' if ((defined $pms->{spf_neutral}) and ($pms->{spf_neutral} eq 1));
+  $spf_status = 'softfail' if ((defined $pms->{spf_softfail}) and ($pms->{spf_softfail} eq 1));
+  $spf_helo_status = 'pass' if ((defined $pms->{spf_helo_pass}) and ($pms->{spf_helo_pass} eq 1));
+  $spf_helo_status = 'fail' if ((defined $pms->{spf_helo_fail}) and ($pms->{spf_helo_fail} eq 1));
+  $spf_helo_status = 'fail' if ((defined $pms->{spf_helo_permerror}) and ($pms->{spf_helo_permerror} eq 1));
+  $spf_helo_status = 'fail' if ((defined $pms->{spf_helo_none}) and ($pms->{spf_helo_none} eq 1));
+  $spf_helo_status = 'neutral' if ((defined $pms->{spf_helo_neutral}) and ($pms->{spf_helo_neutral} eq 1));
+  $spf_helo_status = 'softfail' if ((defined $pms->{spf_helo_softfail}) and ($pms->{spf_helo_softfail} eq 1));
 
   $dmarc->source_ip($lasthop->{ip});
   $dmarc->envelope_to($self->uri_to_domain($pms->get('To:addr')));
