@@ -196,11 +196,12 @@ sub _check_dmarc {
   ]);
   $result = $dmarc->validate();
 
-  dbg("result: " . $result->result . ", disposition: " . $result->disposition . ", dkim: " . $result->dkim . ", spf: " . $result->spf);
   $self->{dmarc_result} = $result->result;
   if((defined $self->{dmarc_result}) and ($self->{dmarc_result} ne 'none')) {
+    dbg("result: " . $self->{dmarc_result} . ", disposition: " . $result->disposition . ", dkim: " . $result->dkim . ", spf: " . $result->spf);
     $self->{dmarc_policy} = $result->published->p;
   } else { 
+    dbg("result: no policy available");
     $self->{dmarc_policy} = "no policy available";
   }
   $self->{dmarc_checked} = 1;
