@@ -148,6 +148,7 @@ Mail::SpamAssassin::Plugin::Dmarc \- check Dmarc policy
 \&  ifplugin Mail::SpamAssassin::Plugin::Dmarc
 \&    header DMARC_REJECT eval:check_dmarc_reject()
 \&    describe DMARC_REJECT Dmarc reject policy
+\&    priority DMARC_REJECT 999
 \&  endif
 .Ve
 .SH "DESCRIPTION"
