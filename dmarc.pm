@@ -151,7 +151,7 @@ sub _check_dmarc {
   my $spf_helo_status = 'none';
   my ($dmarc, $lasthop, $result);
 
-  if($self->{dmarc_checked} eq 1) {
+  if((defined $self->{dmarc_checked}) and ($self->{dmarc_checked} eq 1)) {
     return;
   }
   $dmarc = Mail::DMARC::PurePerl->new();
@@ -172,7 +172,7 @@ sub _check_dmarc {
   $dmarc->spf([
     {
         scope  => 'mfrom',
-        domain => "$self->uri_to_domain($lasthop->{envfrom})",
+        domain => "$self->uri_to_domain($pms->{spf_sender})",
         result => "$spf_status",
     },
     {
