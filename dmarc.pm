@@ -152,6 +152,11 @@ sub _check_dmarc {
   my $spf_helo_status = 'none';
   my ($dmarc, $lasthop, $result);
 
+  if (!HAS_DMARC) {
+    warn "check_dmarc not supported, required module Mail::DMARC::PurePerl missing\n";
+    return 0;
+  }
+
   if((defined $self->{dmarc_checked}) and ($self->{dmarc_checked} eq 1)) {
     return;
   }
