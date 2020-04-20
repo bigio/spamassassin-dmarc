@@ -98,7 +98,7 @@ sub set_config {
 sub check_dmarc_reject {
   my ($self,$pms,$name) = @_;
 
-  my @tags = ('DKIMCHECKDONE');
+  my @tags = ('RELAYSEXTERNAL');
 
   $pms->action_depends_on_tags(\@tags,
       sub { my($pms, @args) = @_;
@@ -115,7 +115,7 @@ sub check_dmarc_reject {
 sub check_dmarc_quarantine {
   my ($self,$pms,$name) = @_;
 
-  my @tags = ('DKIMCHECKDONE');
+  my @tags = ('RELAYSEXTERNAL');
 
   $pms->action_depends_on_tags(\@tags,
       sub { my($pms, @args) = @_;
@@ -132,7 +132,7 @@ sub check_dmarc_quarantine {
 sub check_dmarc_none {
   my ($self,$pms,$name) = @_;
 
-  my @tags = ('DKIMCHECKDONE');
+  my @tags = ('RELAYSEXTERNAL');
 
   $pms->action_depends_on_tags(\@tags,
       sub { my($pms, @args) = @_;

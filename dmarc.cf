@@ -1,14 +1,14 @@
-header GB_DMARC_REJECT eval:check_dmarc_reject()
+header __GB_DMARC_REJECT eval:check_dmarc_reject()
+meta GB_DMARC_REJECT ( ( DKIM_SIGNED || __DKIM_DEPENDABLE ) && __GB_DMARC_REJECT )
 describe GB_DMARC_REJECT Dmarc reject policy
 score GB_DMARC_REJECT 10
-priority GB_DMARC_REJECT 1000
 
-header GB_DMARC_QUAR eval:check_dmarc_quarantine()
-describe GB_DMARC_NONE Dmarc quarantine policy
+header __GB_DMARC_QUAR eval:check_dmarc_quarantine()
+meta   GB_DMARC_QUAR ( ( DKIM_SIGNED || __DKIM_DEPENDABLE ) && __GB_DMARC_QUAR )
+describe GB_DMARC_QUAR Dmarc quarantine policy
 score GB_DMARC_QUAR 3
-priority GB_DMARC_QUAR 1000
 
-header GB_DMARC_NONE eval:check_dmarc_none()
+header __GB_DMARC_NONE eval:check_dmarc_none()
+meta   GB_DMARC_NONE ( ( DKIM_SIGNED || __DKIM_DEPENDABLE ) && __GB_DMARC_NONE )
 describe GB_DMARC_NONE Dmarc none policy
 score GB_DMARC_NONE 1
-priority GB_DMARC_NONE 1000
