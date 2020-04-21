@@ -105,10 +105,12 @@ sub check_dmarc_reject {
         $self->_check_dmarc(@_);
         if((defined $self->{dmarc_result}) and ($self->{dmarc_result} eq 'fail') and ($self->{dmarc_policy} eq 'reject')) {
           $pms->got_hit($pms->get_current_eval_rule_name(), "");
+          undef $self->{dmarc_checked};
           return 1;
         }
       }
   );
+  undef $self->{dmarc_checked};
   return 0;
 }
 
@@ -122,10 +124,12 @@ sub check_dmarc_quarantine {
         $self->_check_dmarc(@_);
         if((defined $self->{dmarc_result}) and ($self->{dmarc_result} eq 'fail') and ($self->{dmarc_policy} eq 'quarantine')) {
           $pms->got_hit($pms->get_current_eval_rule_name(), "");
+          undef $self->{dmarc_checked};
           return 1;
         }
       }
   );
+  undef $self->{dmarc_checked};
   return 0;
 }
 
@@ -139,10 +143,12 @@ sub check_dmarc_none {
         $self->_check_dmarc(@_);
         if((defined $self->{dmarc_result}) and ($self->{dmarc_result} eq 'fail') and ($self->{dmarc_policy} eq 'none')) {
           $pms->got_hit($pms->get_current_eval_rule_name(), "");
+          undef $self->{dmarc_checked};
           return 1;
         }
       }
   );
+  undef $self->{dmarc_checked};
   return 0;
 }
 
