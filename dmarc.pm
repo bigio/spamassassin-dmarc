@@ -103,14 +103,12 @@ sub check_dmarc_reject {
   $pms->action_depends_on_tags(\@tags,
       sub { my($pms, @args) = @_;
         $self->_check_dmarc(@_);
-        if((defined $self->{dmarc_result}) and ($self->{dmarc_result} eq 'fail') and ($self->{dmarc_policy} eq 'reject')) {
+        if((defined $pms->{dmarc_result}) and ($pms->{dmarc_result} eq 'fail') and ($pms->{dmarc_policy} eq 'reject')) {
           $pms->got_hit($pms->get_current_eval_rule_name(), "");
-          undef $self->{dmarc_checked};
           return 1;
         }
       }
   );
-  undef $self->{dmarc_checked};
   return 0;
 }
 
@@ -122,14 +120,12 @@ sub check_dmarc_quarantine {
   $pms->action_depends_on_tags(\@tags,
       sub { my($pms, @args) = @_;
         $self->_check_dmarc(@_);
-        if((defined $self->{dmarc_result}) and ($self->{dmarc_result} eq 'fail') and ($self->{dmarc_policy} eq 'quarantine')) {
+        if((defined $pms->{dmarc_result}) and ($pms->{dmarc_result} eq 'fail') and ($pms->{dmarc_policy} eq 'quarantine')) {
           $pms->got_hit($pms->get_current_eval_rule_name(), "");
-          undef $self->{dmarc_checked};
           return 1;
         }
       }
   );
-  undef $self->{dmarc_checked};
   return 0;
 }
 
@@ -141,14 +137,12 @@ sub check_dmarc_none {
   $pms->action_depends_on_tags(\@tags,
       sub { my($pms, @args) = @_;
         $self->_check_dmarc(@_);
-        if((defined $self->{dmarc_result}) and ($self->{dmarc_result} eq 'fail') and ($self->{dmarc_policy} eq 'none')) {
+        if((defined $pms->{dmarc_result}) and ($pms->{dmarc_result} eq 'fail') and ($pms->{dmarc_policy} eq 'none')) {
           $pms->got_hit($pms->get_current_eval_rule_name(), "");
-          undef $self->{dmarc_checked};
           return 1;
         }
       }
   );
-  undef $self->{dmarc_checked};
   return 0;
 }
 
@@ -202,15 +196,17 @@ sub _check_dmarc {
   ]);
   $result = $dmarc->validate();
 
-  $self->{dmarc_result} = $result->result;
-  if((defined $self->{dmarc_result}) and ($self->{dmarc_result} ne 'none')) {
-    dbg("result: " . $self->{dmarc_result} . ", disposition: " . $result->disposition . ", dkim: " . $result->dkim . ", spf: " . $result->spf);
-    $self->{dmarc_policy} = $result->published->p;
+  $pms->{dmarc_result} = $result->result;
+  if((defined $pms->{dmarc_result}) and ($pms->{dmarc_result} ne 'none')) {
+    dbg("result: " . $pms->{dmarc_result} . ", disposition: " . $result->disposition . ", dkim: " . $result->dkim . ", spf: " . $result->spf);
+    $pms->{dmarc_policy} = $result->published->p;
   } else { 
     dbg("result: no policy available");
-    $self->{dmarc_policy} = "no policy available";
+    $pms->{dmarc_policy} = "no policy available";
   }
-  $self->{dmarc_checked} = 1;
+  $pms->{dmarc_checked} = 1;
+  undef $result;
+  undef $dmarc;
 }
 
 1;
