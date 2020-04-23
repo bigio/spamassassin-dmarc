@@ -1,16 +1,18 @@
 ifplugin Mail::SpamAssassin::Plugin::Dmarc
+  meta __DKIM_DEP ( DKIM_VALID || DKIM_INVALID || __DKIM_DEPENDABLE )
+  meta __SPF_DEP ( SPF_NONE || SPF_FAIL || SPF_SOFTFAIL || SPF_PASS )
   header __GB_DMARC_REJECT eval:check_dmarc_reject()
-  meta GB_DMARC_REJECT ( ( DKIM_VALID || DKIM_INVALID || __DKIM_DEPENDABLE ) && __GB_DMARC_REJECT )
+  meta GB_DMARC_REJECT ( ( __DKIM_DEP || __SPF_DEP ) && __GB_DMARC_REJECT )
   describe GB_DMARC_REJECT Dmarc reject policy
   score GB_DMARC_REJECT 0.3
 
   header __GB_DMARC_QUAR eval:check_dmarc_quarantine()
-  meta   GB_DMARC_QUAR ( ( DKIM_VALID || DKIM_INVALID || __DKIM_DEPENDABLE ) && __GB_DMARC_QUAR )
+  meta   GB_DMARC_QUAR ( ( __DKIM_DEP || __SPF_DEP ) && __GB_DMARC_QUAR )
   describe GB_DMARC_QUAR Dmarc quarantine policy
   score GB_DMARC_QUAR 0.2
 
   header __GB_DMARC_NONE eval:check_dmarc_none()
-  meta   GB_DMARC_NONE ( ( DKIM_VALID || DKIM_INVALID || __DKIM_DEPENDABLE ) && __GB_DMARC_NONE )
+  meta   GB_DMARC_NONE ( ( __DKIM_DEP || __SPF_DEP ) && __GB_DMARC_NONE )
   describe GB_DMARC_NONE Dmarc none policy
   score GB_DMARC_NONE 0.1
 endif
