@@ -29,9 +29,12 @@ Mail::SpamAssassin::Plugin::Dmarc - check Dmarc policy
   loadplugin Mail::SpamAssassin::Plugin::Dmarc
 
   ifplugin Mail::SpamAssassin::Plugin::Dmarc
+    meta __DKIM_DEP ( DKIM_VALID || DKIM_INVALID || __DKIM_DEPENDABLE )
+    meta __SPF_DEP ( SPF_NONE || SPF_FAIL || SPF_SOFTFAIL || SPF_PASS )
+    header __DMARC_REJECT eval:check_dmarc_reject()
+    meta DMARC_REJECT ( ( __DKIM_DEP || __SPF_DEP ) && __DMARC_REJECT )
     header DMARC_REJECT eval:check_dmarc_reject()
     describe DMARC_REJECT Dmarc reject policy
-    priority DMARC_REJECT 999
   endif
 
 =head1 DESCRIPTION

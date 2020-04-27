@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "dmarc 3"
-.TH dmarc 3 "2020-04-20" "perl v5.30.2" "User Contributed Perl Documentation"
+.TH dmarc 3 "2020-04-27" "perl v5.30.2" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -146,9 +146,12 @@ Mail::SpamAssassin::Plugin::Dmarc \- check Dmarc policy
 \&  loadplugin Mail::SpamAssassin::Plugin::Dmarc
 \&
 \&  ifplugin Mail::SpamAssassin::Plugin::Dmarc
+\&    meta _\|_DKIM_DEP ( DKIM_VALID || DKIM_INVALID || _\|_DKIM_DEPENDABLE )
+\&    meta _\|_SPF_DEP ( SPF_NONE || SPF_FAIL || SPF_SOFTFAIL || SPF_PASS )
+\&    header _\|_DMARC_REJECT eval:check_dmarc_reject()
+\&    meta DMARC_REJECT ( ( _\|_DKIM_DEP || _\|_SPF_DEP ) && _\|_DMARC_REJECT )
 \&    header DMARC_REJECT eval:check_dmarc_reject()
 \&    describe DMARC_REJECT Dmarc reject policy
-\&    priority DMARC_REJECT 999
 \&  endif
 .Ve
 .SH "DESCRIPTION"
