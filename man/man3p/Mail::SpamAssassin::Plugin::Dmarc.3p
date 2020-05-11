@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "dmarc 3"
-.TH dmarc 3 "2020-04-27" "perl v5.30.2" "User Contributed Perl Documentation"
+.TH dmarc 3 "2020-05-11" "perl v5.30.2" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -157,3 +157,6 @@ Mail::SpamAssassin::Plugin::Dmarc \- check Dmarc policy
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
 This plugin checks if emails matches Dmarc policy.
+.IP "save_reports ( 0 | 1 ) (default: 0)" 4
+.IX Item "save_reports ( 0 | 1 ) (default: 0)"
+Store \s-1DMARC\s0 reports using Mail::Dmarc::Store, mail\-dmarc.ini must be configured to save and send \s-1DMARC\s0 reports.

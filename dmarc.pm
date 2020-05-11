@@ -96,6 +96,27 @@ sub new {
 }
 
 sub set_config {
+    my ($self, $conf) = @_;
+    my @cmds;
+
+=over 4
+
+=item save_reports ( 0 | 1 ) (default: 0)
+
+Store DMARC reports using Mail::Dmarc::Store, mail-dmarc.ini must be configured to save and send DMARC reports.
+
+=back
+
+=cut
+
+    push(@cmds, {
+        setting => 'save_reports',
+        default => '0',
+        type => $Mail::SpamAssassin::Conf::CONF_TYPE_BOOL,
+        }
+    );
+    $conf->{parser}->register_commands(\@cmds);
+
 }
 
 sub check_dmarc_reject {
@@ -153,7 +174,7 @@ sub _check_dmarc {
   my ($self,$pms,$name) = @_;
   my $spf_status = 'none';
   my $spf_helo_status = 'none';
-  my ($dmarc, $lasthop, $result);
+  my ($dmarc, $lasthop, $result, $rua);
 
   if (!HAS_DMARC) {
     warn "check_dmarc not supported, required module Mail::DMARC::PurePerl missing\n";
@@ -204,6 +225,19 @@ sub _check_dmarc {
     },
   ]);
   $result = $dmarc->validate();
+
+  if($pms->{conf}->{save_reports} == 1) {
+    $rua = eval { $result->published()->rua(); };
+    if ($rua) {
+      eval {
+        dbg("Dmarc report will be send to $rua");
+        $dmarc->save_aggregate();
+      };
+      if ( my $error = $@ ) {
+        dbg("Dmarc report could not be saved: $error");
+      }
+    }
+  }
 
   $pms->{dmarc_result} = $result->result;
   if((defined $pms->{dmarc_result}) and ($pms->{dmarc_result} ne 'none')) {
