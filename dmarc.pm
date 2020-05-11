@@ -101,7 +101,7 @@ sub set_config {
 
 =over 4
 
-=item save_reports ( 0 | 1 ) (default: 0)
+=item dmarc_save_reports ( 0 | 1 ) (default: 0)
 
 Store DMARC reports using Mail::Dmarc::Store, mail-dmarc.ini must be configured to save and send DMARC reports.
 
@@ -110,7 +110,7 @@ Store DMARC reports using Mail::Dmarc::Store, mail-dmarc.ini must be configured 
 =cut
 
     push(@cmds, {
-        setting => 'save_reports',
+        setting => 'dmarc_save_reports',
         default => '0',
         type => $Mail::SpamAssassin::Conf::CONF_TYPE_BOOL,
         }
@@ -226,7 +226,7 @@ sub _check_dmarc {
   ]);
   $result = $dmarc->validate();
 
-  if($pms->{conf}->{save_reports} == 1) {
+  if($pms->{conf}->{dmarc_save_reports} == 1) {
     $rua = eval { $result->published()->rua(); };
     if ($rua) {
       eval {
