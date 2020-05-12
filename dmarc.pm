@@ -226,7 +226,7 @@ sub _check_dmarc {
   ]);
   $result = $dmarc->validate();
 
-  if($pms->{conf}->{dmarc_save_reports} == 1) {
+  if(($pms->{conf}->{dmarc_save_reports} == 1) and (defined $result->result) and ($result->result eq 'fail')) {
     $rua = eval { $result->published()->rua(); };
     if ($rua) {
       eval {
