@@ -39,7 +39,8 @@ Mail::SpamAssassin::Plugin::Dmarc - check Dmarc policy
 
 =head1 DESCRIPTION
 
-This plugin checks if emails matches Dmarc policy.
+This plugin checks if emails matches Dmarc policy, the plugin needs both DKIM
+and SPF plugins.
 
 =cut
 
