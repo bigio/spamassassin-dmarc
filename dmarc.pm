@@ -209,9 +209,7 @@ sub _check_dmarc {
   $spf_helo_status = 'softfail' if ((defined $pms->{spf_helo_softfail}) and ($pms->{spf_helo_softfail} eq 1));
 
   $dmarc->source_ip($lasthop->{ip});
-  $dmarc->envelope_to($self->uri_to_domain($pms->get('To:addr')));
-  $dmarc->envelope_from($self->uri_to_domain($lasthop->{envfrom}));
-  $dmarc->header_from($self->uri_to_domain($pms->get('From:addr')));
+  $dmarc->header_from_raw($pms->get('From:addr'));
   $dmarc->dkim($pms->{dkim_verifier});
   $dmarc->spf([
     {
