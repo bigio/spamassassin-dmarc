@@ -231,7 +231,7 @@ sub _check_dmarc {
     $rua = eval { $result->published()->rua(); };
     if ($rua) {
       eval {
-        dbg("Dmarc report will be send to $rua");
+        dbg("Dmarc report will be sent to $rua");
         $dmarc->save_aggregate();
       };
       if ( my $error = $@ ) {
