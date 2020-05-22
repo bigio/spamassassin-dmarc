@@ -227,7 +227,7 @@ sub _check_dmarc {
 
   if(($pms->{conf}->{dmarc_save_reports} == 1) and (defined $result->result)) {
     $rua = eval { $result->published()->rua(); };
-    if ($rua =~ /mailto\:/) {
+    if (defined $rua and $rua =~ /mailto\:/) {
       eval {
         dbg("Dmarc report will be sent to $rua");
         $dmarc->save_aggregate();
