@@ -192,8 +192,8 @@ sub _check_dmarc {
   $pms->{spf_sender} = $pms->{sender} unless defined $pms->{spf_sender};
   $pms->{spf_sender} = $pms->get('EnvelopeFrom:addr') unless defined $pms->{spf_sender};
 
-  return if (not defined $lasthop->{ip});
-  return if (not defined $pms->{dkim_verifier});
+  return if ( not ref($pms->{dkim_verifier}));
+  return if ( $pms->get('From:addr') !~ /\@/ );
 
   $spf_status = 'pass' if ((defined $pms->{spf_pass}) and ($pms->{spf_pass} eq 1));
   $spf_status = 'fail' if ((defined $pms->{spf_fail}) and ($pms->{spf_fail} eq 1));
