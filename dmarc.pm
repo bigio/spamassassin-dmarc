@@ -175,7 +175,7 @@ sub _check_dmarc {
   my ($self,$pms,$name) = @_;
   my $spf_status = 'none';
   my $spf_helo_status = 'none';
-  my ($dmarc, $lasthop, $result, $rua);
+  my ($dmarc, $lasthop, $result, $rua, $domain);
 
   if (!HAS_DMARC) {
     warn "check_dmarc not supported, required module Mail::DMARC::PurePerl missing\n";
@@ -208,13 +208,14 @@ sub _check_dmarc {
   $spf_helo_status = 'neutral' if ((defined $pms->{spf_helo_neutral}) and ($pms->{spf_helo_neutral} eq 1));
   $spf_helo_status = 'softfail' if ((defined $pms->{spf_helo_softfail}) and ($pms->{spf_helo_softfail} eq 1));
 
+  $domain = $self->uri_to_domain($pms->{spf_sender});
   $dmarc->source_ip($lasthop->{ip});
   $dmarc->header_from_raw($pms->get('From:addr'));
   $dmarc->dkim($pms->{dkim_verifier});
   $dmarc->spf([
     {
         scope  => 'mfrom',
-        domain => "$self->uri_to_domain($pms->{spf_sender})",
+        domain => "$domain",
         result => "$spf_status",
     },
     {
