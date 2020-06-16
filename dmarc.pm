@@ -209,22 +209,32 @@ sub _check_dmarc {
   $spf_helo_status = 'softfail' if ((defined $pms->{spf_helo_softfail}) and ($pms->{spf_helo_softfail} eq 1));
 
   $domain = $self->uri_to_domain($pms->{spf_sender});
+  if(not defined $domain) {
+    # read domain from mail from if spf is not available
+    $domain = $self->uri_to_domain($pms->get('From:addr'));
+  }
   $dmarc->source_ip($lasthop->{ip});
   $dmarc->header_from_raw($pms->get('From:addr'));
   $dmarc->dkim($pms->{dkim_verifier});
-  $dmarc->spf([
-    {
+  eval {
+    $dmarc->spf([
+      {
         scope  => 'mfrom',
         domain => "$domain",
         result => "$spf_status",
-    },
-    {
+      },
+      {
         scope  => 'helo',
         domain => "$lasthop->{lc_helo}",
         result => "$spf_helo_status",
-    },
-  ]);
-  $result = $dmarc->validate();
+      },
+    ]);
+    $result = $dmarc->validate();
+  };
+  if ($@) {
+    dbg("Dmarc error while evaluating domain $domain: $@");
+    return;
+  }
 
   if(($pms->{conf}->{dmarc_save_reports} == 1) and (defined $result->result)) {
     $rua = eval { $result->published()->rua(); };
