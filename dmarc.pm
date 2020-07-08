@@ -182,7 +182,7 @@ sub _check_dmarc {
     return 0;
   }
 
-  if((defined $self->{dmarc_checked}) and ($self->{dmarc_checked} eq 1)) {
+  if((defined $pms->{dmarc_checked}) and ($pms->{dmarc_checked} eq 1)) {
     return;
   }
   $dmarc = Mail::DMARC::PurePerl->new();
