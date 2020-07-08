@@ -92,6 +92,7 @@ sub new {
     $self->register_eval_rule("check_dmarc_reject");
     $self->register_eval_rule("check_dmarc_quarantine");
     $self->register_eval_rule("check_dmarc_none");
+    $self->register_eval_rule("check_dmarc_missing");
 
     return $self;
 }
@@ -163,6 +164,23 @@ sub check_dmarc_none {
       sub { my($pms, @args) = @_;
         $self->_check_dmarc(@_);
         if((defined $pms->{dmarc_result}) and ($pms->{dmarc_result} eq 'fail') and ($pms->{dmarc_policy} eq 'none')) {
+          $pms->got_hit($pms->get_current_eval_rule_name(), "");
+          return 1;
+        }
+      }
+  );
+  return 0;
+}
+
+sub check_dmarc_missing {
+  my ($self,$pms,$name) = @_;
+
+  my @tags = ('RELAYSEXTERNAL');
+
+  $pms->action_depends_on_tags(\@tags,
+      sub { my($pms, @args) = @_;
+        $self->_check_dmarc(@_);
+        if((defined $pms->{dmarc_result}) and ($pms->{dmarc_policy} eq 'no policy available')) {
           $pms->got_hit($pms->get_current_eval_rule_name(), "");
           return 1;
         }
