@@ -20,6 +20,11 @@ ifplugin Mail::SpamAssassin::Plugin::Dmarc
       meta   GB_DMARC_NONE ( ( __DKIM_DEP || __SPF_DEP ) && __GB_DMARC_NONE )
       describe GB_DMARC_NONE Dmarc none policy
       score GB_DMARC_NONE 0.1
+
+      header __GB_DMARC_MISSING eval:check_dmarc_missing()
+      meta   GB_DMARC_MISSING ( ( __DKIM_DEP || __SPF_DEP ) && __GB_DMARC_MISSING )
+      describe GB_DMARC_MISSING Dmarc policy missing
+      score GB_DMARC_MISSING 0.0
     endif
   endif
 endif
