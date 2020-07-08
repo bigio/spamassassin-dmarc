@@ -8,17 +8,17 @@ ifplugin Mail::SpamAssassin::Plugin::Dmarc
 
       header __DMARC_REJECT eval:check_dmarc_reject()
       meta DMARC_REJECT ( ( __DKIM_DEP || __SPF_DEP ) && __DMARC_REJECT )
-      describe DMARC_REJECT DMARC reject policy
+      describe DMARC_REJECT DMARC fail with reject policy
       score DMARC_REJECT 0.3
 
       header __DMARC_QUAR eval:check_dmarc_quarantine()
       meta   DMARC_QUAR ( ( __DKIM_DEP || __SPF_DEP ) && __DMARC_QUAR )
-      describe DMARC_QUAR DMARC quarantine policy
+      describe DMARC_QUAR DMARC fail with quarantine policy
       score DMARC_QUAR 0.2
 
       header __DMARC_NONE eval:check_dmarc_none()
       meta   DMARC_NONE ( ( __DKIM_DEP || __SPF_DEP ) && __DMARC_NONE )
-      describe DMARC_NONE DMARC none policy
+      describe DMARC_NONE DMARC fail with none policy
       score DMARC_NONE 0.1
 
       header __DMARC_MISSING eval:check_dmarc_missing()
