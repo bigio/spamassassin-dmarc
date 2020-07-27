@@ -89,6 +89,7 @@ sub new {
     bless ($self, $class);
 
     $self->set_config($mailsa->{conf});
+    $self->register_eval_rule("check_dmarc_pass");
     $self->register_eval_rule("check_dmarc_reject");
     $self->register_eval_rule("check_dmarc_quarantine");
     $self->register_eval_rule("check_dmarc_none");
@@ -119,6 +120,23 @@ Store DMARC reports using Mail::Dmarc::Store, mail-dmarc.ini must be configured 
     );
     $conf->{parser}->register_commands(\@cmds);
 
+}
+
+sub check_dmarc_pass {
+  my ($self,$pms,$name) = @_;
+
+  my @tags = ('RELAYSEXTERNAL');
+
+  $pms->action_depends_on_tags(\@tags,
+      sub { my($pms, @args) = @_;
+        $self->_check_dmarc(@_);
+        if((defined $pms->{dmarc_result}) and ($pms->{dmarc_result} eq 'pass') and ($pms->{dmarc_policy} ne 'no policy available')) {
+          $pms->got_hit($pms->get_current_eval_rule_name(), "");
+          return 1;
+        }
+      }
+  );
+  return 0;
 }
 
 sub check_dmarc_reject {
