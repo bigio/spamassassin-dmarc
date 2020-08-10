@@ -288,6 +288,11 @@ sub _check_dmarc {
   }
 
   $pms->{dmarc_result} = $result->result;
+  if ($result->reason->[0]{comment} eq "too many policies") {
+    dbg("result: no policy available");
+    $pms->{dmarc_policy} = "no policy available";
+    return;
+  }
   if((defined $pms->{dmarc_result}) and ($pms->{dmarc_result} ne 'none')) {
     dbg("result: " . $pms->{dmarc_result} . ", disposition: " . $result->disposition . ", dkim: " . $result->dkim . ", spf: " . $result->spf . " ( spf: $spf_status, spf_helo: $spf_helo_status)");
     $pms->{dmarc_policy} = $result->published->p;
