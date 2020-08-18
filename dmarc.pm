@@ -288,7 +288,7 @@ sub _check_dmarc {
   }
 
   $pms->{dmarc_result} = $result->result;
-  if ((defined $result->reason->[0]{comment}) and ($result->reason->[0]{comment} eq "too many policies")) {
+  if ((defined $result->reason) and (defined $result->reason->[0]{comment}) and ($result->reason->[0]{comment} eq "too many policies")) {
     dbg("result: no policy available");
     $pms->{dmarc_policy} = "no policy available";
     return;
