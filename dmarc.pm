@@ -26,7 +26,7 @@ Mail::SpamAssassin::Plugin::Dmarc - check Dmarc policy
 
 =head1 SYNOPSIS
 
-  loadplugin Mail::SpamAssassin::Plugin::Dmarc
+  loadplugin Mail::SpamAssassin::Plugin::Dmarc dmarc.pm
 
   ifplugin Mail::SpamAssassin::Plugin::Dmarc
     meta __DKIM_DEP ( DKIM_VALID || DKIM_INVALID || __DKIM_DEPENDABLE )
