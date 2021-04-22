@@ -258,7 +258,7 @@ sub _check_dmarc {
     $dmarc->spf([
       {
         scope  => 'mfrom',
-        domain => "$domain",
+        domain => "$mfrom_domain",
         result => "$spf_status",
       },
       {
