@@ -1,0 +1,32 @@
+ifplugin Mail::SpamAssassin::Plugin::Dmarc
+  ifplugin Mail::SpamAssassin::Plugin::DKIM
+    ifplugin Mail::SpamAssassin::Plugin::SPF
+      dmarc_save_reports 0
+
+      header DMARC_REJECT eval:check_dmarc_reject()
+      priority DMARC_REJECT 500
+      describe DMARC_REJECT DMARC fail with reject policy
+      score DMARC_REJECT 0.3
+
+      header DMARC_QUAR eval:check_dmarc_quarantine()
+      priority DMARC_QUAR 500
+      describe DMARC_QUAR DMARC fail with quarantine policy
+      score DMARC_QUAR 0.2
+
+      header DMARC_NONE eval:check_dmarc_none()
+      priority DMARC_NONE 500
+      describe DMARC_NONE DMARC fail with none policy
+      score DMARC_NONE 0.1
+
+      header DMARC_MISSING eval:check_dmarc_missing()
+      priority DMARC_MISSING 500
+      describe DMARC_MISSING DMARC policy missing
+      score DMARC_MISSING 0.0
+
+      header DMARC_PASS eval:check_dmarc_pass()
+      priority DMARC_PASS 500
+      describe DMARC_PASS DMARC tests pass
+      score DMARC_PASS -0.1
+    endif
+  endif
+endif

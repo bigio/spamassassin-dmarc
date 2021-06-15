@@ -1,7 +1,3 @@
-#
-# Author: Giovanni Bechis <gbechis@apache.org>
-# Copyright 2020 Giovanni Bechis
-#
 # <@LICENSE>
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +15,7 @@
 # limitations under the License.
 # </@LICENSE>
 #
+# Author: Giovanni Bechis <gbechis@apache.org>
 
 =head1 NAME
 
@@ -26,21 +23,30 @@ Mail::SpamAssassin::Plugin::Dmarc - check Dmarc policy
 
 =head1 SYNOPSIS
 
-  loadplugin Mail::SpamAssassin::Plugin::Dmarc dmarc.pm
+  loadplugin Mail::SpamAssassin::Plugin::Dmarc
 
   ifplugin Mail::SpamAssassin::Plugin::Dmarc
-    meta __DKIM_DEP ( DKIM_VALID || DKIM_INVALID || __DKIM_DEPENDABLE )
-    meta __SPF_DEP ( SPF_NONE || SPF_FAIL || SPF_SOFTFAIL || SPF_PASS )
-    header __DMARC_REJECT eval:check_dmarc_reject()
-    meta DMARC_REJECT ( ( __DKIM_DEP || __SPF_DEP ) && __DMARC_REJECT )
+    header DMARC_NONE eval:check_dmarc_none()
+    priority DMARC_NONE 500
+    describe DMARC_NONE Dmarc none policy
+
+    header DMARC_QUAR eval:check_dmarc_quarantine()
+    priority DMARC_QUAR 500
+    describe DMARC_QUAR Dmarc quarantine policy
+
     header DMARC_REJECT eval:check_dmarc_reject()
+    priority DMARC_REJECT 500
     describe DMARC_REJECT Dmarc reject policy
+
+    header DMARC_MISSING eval:check_dmarc_missing()
+    priority DMARC_MISSING 500
+    describe DMARC_MISSING Missing Dmarc policy
   endif
 
 =head1 DESCRIPTION
 
 This plugin checks if emails matches Dmarc policy, the plugin needs both DKIM
-and SPF plugins.
+and SPF plugins enabled.
 
 =cut
 
@@ -67,19 +73,6 @@ BEGIN
 }
 
 sub dbg { Mail::SpamAssassin::Plugin::dbg ("Dmarc: @_"); }
-
-# XXX copied from "FromNameSpoof" plugin, put into util ?
-sub uri_to_domain {
-  my ($self, $domain) = @_;
-
-  return unless defined $domain;
-
-  if ($Mail::SpamAssassin::VERSION <= 3.004000) {
-    Mail::SpamAssassin::Util::uri_to_domain($domain);
-  } else {
-    $self->{main}->{registryboundaries}->uri_to_domain($domain);
-  }
-}
 
 sub new {
     my ($class, $mailsa) = @_;
@@ -224,10 +217,6 @@ sub _check_dmarc {
   $dmarc = Mail::DMARC::PurePerl->new();
   $lasthop = $pms->{relays_external}->[0];
 
-  # XXX SpamAssassin 3.4 compat glue
-  $pms->{spf_sender} = $pms->{sender} unless defined $pms->{spf_sender};
-  $pms->{spf_sender} = $pms->get('EnvelopeFrom:addr') unless defined $pms->{spf_sender};
-
   return if ( not ref($pms->{dkim_verifier}));
   return if ( $pms->get('From:addr') !~ /\@/ );
 
@@ -244,13 +233,8 @@ sub _check_dmarc {
   $spf_helo_status = 'neutral' if ((defined $pms->{spf_helo_neutral}) and ($pms->{spf_helo_neutral} eq 1));
   $spf_helo_status = 'softfail' if ((defined $pms->{spf_helo_softfail}) and ($pms->{spf_helo_softfail} eq 1));
 
-  $domain = $self->uri_to_domain($pms->{spf_sender});
-  $mfrom_domain = $self->uri_to_domain($pms->get('From:addr'));
+  $mfrom_domain = $pms->get('From:domain');
   return if not defined $mfrom_domain;
-  if(not defined $domain) {
-    # use domain from mail from if spf is not available
-    $domain = $mfrom_domain;
-  }
   $dmarc->source_ip($lasthop->{ip});
   $dmarc->header_from_raw($pms->get('From:addr'));
   $dmarc->dkim($pms->{dkim_verifier});
@@ -278,11 +262,12 @@ sub _check_dmarc {
     $rua = eval { $result->published()->rua(); };
     if (defined $rua and $rua =~ /mailto\:/) {
       eval {
-        dbg("Dmarc report will be sent to $rua");
         $dmarc->save_aggregate();
       };
       if ( my $error = $@ ) {
         dbg("Dmarc report could not be saved: $error");
+      } else {
+        dbg("Dmarc report will be sent to $rua");
       }
     }
   }
