@@ -72,7 +72,7 @@ BEGIN
     };
 }
 
-sub dbg { Mail::SpamAssassin::Plugin::dbg ("Dmarc: @_"); }
+sub dbg { my $msg = shift; Mail::SpamAssassin::Plugin::dbg("Dmarc: $msg", @_); }
 
 sub new {
     my ($class, $mailsa) = @_;
@@ -99,7 +99,7 @@ sub set_config {
 
 =item dmarc_save_reports ( 0 | 1 ) (default: 0)
 
-Store DMARC reports using Mail::Dmarc::Store, mail-dmarc.ini must be configured to save and send DMARC reports.
+Store DMARC reports using Mail::DMARC::Store, mail-dmarc.ini must be configured to save and send DMARC reports.
 
 =back
 
@@ -204,7 +204,7 @@ sub _check_dmarc {
   my ($self,$pms,$name) = @_;
   my $spf_status = 'none';
   my $spf_helo_status = 'none';
-  my ($dmarc, $lasthop, $result, $rua, $domain, $mfrom_domain);
+  my ($dmarc, $lasthop, $result, $rua, $mfrom_domain);
 
   if (!HAS_DMARC) {
     warn "check_dmarc not supported, required module Mail::DMARC::PurePerl missing\n";
@@ -217,7 +217,6 @@ sub _check_dmarc {
   $dmarc = Mail::DMARC::PurePerl->new();
   $lasthop = $pms->{relays_external}->[0];
 
-  return if ( not ref($pms->{dkim_verifier}));
   return if ( $pms->get('From:addr') !~ /\@/ );
 
   $spf_status = 'pass' if ((defined $pms->{spf_pass}) and ($pms->{spf_pass} eq 1));
@@ -241,7 +240,7 @@ sub _check_dmarc {
   return if not defined $mfrom_domain;
   $dmarc->source_ip($lasthop->{ip});
   $dmarc->header_from_raw($pms->get('From:addr'));
-  $dmarc->dkim($pms->{dkim_verifier});
+  $dmarc->dkim($pms->{dkim_verifier}) if (ref($pms->{dkim_verifier}));
   eval {
     $dmarc->spf([
       {
@@ -258,7 +257,11 @@ sub _check_dmarc {
     $result = $dmarc->validate();
   };
   if ($@) {
-    dbg("Dmarc error while evaluating domain $domain: $@");
+    if(defined $mfrom_domain) {
+      dbg("Dmarc error while evaluating domain $mfrom_domain: $@");
+    } else {
+      dbg("Dmarc error: $@");
+    }
     return;
   }
 
