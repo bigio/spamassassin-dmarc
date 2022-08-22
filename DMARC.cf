@@ -1,4 +1,4 @@
-ifplugin Mail::SpamAssassin::Plugin::Dmarc
+ifplugin Mail::SpamAssassin::Plugin::DMARC
   ifplugin Mail::SpamAssassin::Plugin::DKIM
     ifplugin Mail::SpamAssassin::Plugin::SPF
       dmarc_save_reports 0
