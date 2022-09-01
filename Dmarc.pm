@@ -287,7 +287,14 @@ sub _check_dmarc {
   }
   if((defined $pms->{dmarc_result}) and ($pms->{dmarc_result} ne 'none')) {
     dbg("result: " . $pms->{dmarc_result} . ", disposition: " . $result->disposition . ", dkim: " . $result->dkim . ", spf: " . $result->spf . " ( spf: $spf_status, spf_helo: $spf_helo_status)");
-    $pms->{dmarc_policy} = $result->published->p;
+    if(($result->spf ne '') or ($result->dkim ne '')) {
+      $pms->{dmarc_policy} = $result->published->p;
+    } else {
+      # If SPF plugin cannot detect EnvelopeFrom, DMARC checks will fail
+      dbg("Cannot check DMARC policy, not enough data");
+      $pms->{dmarc_policy} = '';
+      return;
+    }
   } else {
     dbg("result: no policy available");
     $pms->{dmarc_policy} = "no policy available";
