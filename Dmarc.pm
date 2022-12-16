@@ -232,10 +232,16 @@ sub _check_dmarc {
   $spf_helo_status = 'neutral' if ((defined $pms->{spf_helo_neutral}) and ($pms->{spf_helo_neutral} eq 1));
   $spf_helo_status = 'softfail' if ((defined $pms->{spf_helo_softfail}) and ($pms->{spf_helo_softfail} eq 1));
 
-  $mfrom_domain = $pms->get('EnvelopeFrom:host', undef);
+  my $from_addr = $pms->get('EnvelopeFrom:addr');
+  if($from_addr =~ /\@(.*)$/) {
+    $mfrom_domain = $1;
+  }
   if(not defined $mfrom_domain) {
-    $mfrom_domain = $pms->get('From:domain', undef);
-    dbg("cannot find EnvelopeFrom domain, using From:domain $mfrom_domain");
+    $from_addr = $pms->get('From:addr');
+    if($from_addr =~ /\@(.*)$/) {
+      dbg("cannot find EnvelopeFrom domain, using From:domain $mfrom_domain");
+      $mfrom_domain = $1;
+    }
   }
   return if not defined $mfrom_domain;
   $dmarc->source_ip($lasthop->{ip});
