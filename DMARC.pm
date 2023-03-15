@@ -343,7 +343,7 @@ sub _check_dmarc {
       $pms->{dmarc_policy} = 'no policy available';
     } elsif ($result->result ne 'none') {
       dbg("result: $result->{result}, disposition: $result->{disposition}, dkim: $result->{dkim}, spf: $result->{spf} (spf: $spf_status, spf_helo: $spf_helo_status)");
-      $pms->{dmarc_policy} = $result->published->p;
+      $pms->{dmarc_policy} = $result->disposition;
     } else {
       dbg("result: no policy available");
       $pms->{dmarc_policy} = 'no policy available';
