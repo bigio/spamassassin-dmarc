@@ -239,8 +239,8 @@ sub _check_dmarc {
   if(not defined $mfrom_domain) {
     $from_addr = $pms->get('From:addr');
     if($from_addr =~ /\@(.*)$/) {
-      dbg("cannot find EnvelopeFrom domain, using From:domain $mfrom_domain");
       $mfrom_domain = $1;
+      dbg("cannot find EnvelopeFrom domain, using From:domain $mfrom_domain");
     }
   }
   return if not defined $mfrom_domain;
